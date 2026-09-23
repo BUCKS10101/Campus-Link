@@ -1,73 +1,298 @@
-# Welcome to your Lovable project
+# Campus-Link
 
-## Project info
+### A campus-focused peer-to-peer delivery platform for VIT Vellore
 
-**URL**: https://lovable.dev/projects/3fce128a-dcd9-41d2-bf9b-d368af63de69
+Campus-Link is a peer-to-peer delivery platform designed for university campuses. It allows students to request deliveries and enables other students to accept and complete those requests.
 
-## How can I edit this code?
+The system is designed specifically around the constraints of a university environment, including campus locations, hostel blocks, student verification, delivery workflows, real-time communication, reputation, and access control.
 
-There are several ways of editing your application.
+## Live Demo
 
-**Use Lovable**
+**Website:** https://campslink.shop/
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/3fce128a-dcd9-41d2-bf9b-d368af63de69) and start prompting.
+## Features
 
-Changes made via Lovable will be committed automatically to this repo.
+### Peer-to-Peer Delivery
 
-**Use your preferred IDE**
+* Create and manage delivery requests
+* Accept and complete delivery requests
+* Order lifecycle management
+* Delivery distance and location handling
+* Order cancellation and stale-order handling
+* Delivery status tracking
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### Campus Location System
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+* Campus-specific locations and buildings
+* Hostel and academic block support
+* Nearby location discovery
+* Location and route management
+* Campus-specific delivery points
 
-Follow these steps:
+### Authentication and Security
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+* Student authentication and verification
+* VIT email-domain enforcement
+* Row Level Security through Supabase
+* Database-level access control
+* Rate limiting for sensitive operations
+* Protected order and delivery operations
+* Trust and safety mechanisms
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+### Ratings and Reputation
 
-# Step 3: Install the necessary dependencies.
-npm i
+* Post-delivery ratings
+* User reputation system
+* Reputation-based trust signals
+* Validation of rating operations
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+### Communication
+
+* Order-specific chat
+* Notifications for order events
+* Friend requests and social interactions
+* Notification access control
+
+### Social Features
+
+* Friend requests
+* User relationships
+* Social notifications
+* Profile reputation
+
+### Analytics
+
+* Order and application analytics
+* User activity data
+* Backend analytics functionality
+* PostgreSQL-based analytics infrastructure
+
+### User Preferences
+
+* Persistent user preferences
+* Preference-based application behavior
+* Personalized functionality
+
+## Tech Stack
+
+### Frontend
+
+* React
+* TypeScript
+* Vite
+* Tailwind CSS
+* shadcn/ui
+
+### Backend
+
+* Supabase
+* PostgreSQL
+* Supabase Auth
+* PostgreSQL Functions
+* Row Level Security
+* Supabase Realtime
+
+### Development and Deployment
+
+* Vitest
+* ESLint
+* Vercel
+* GitHub
+* Custom domain deployment
+
+## Architecture
+
+```text
+                    React Application
+             TypeScript + Vite + Tailwind
+                           |
+                           |
+                    Supabase Client
+                           |
+             +-------------+-------------+
+             |             |             |
+        Authentication   Database     Realtime
+             |             |             |
+             +-------------+-------------+
+                           |
+                       PostgreSQL
+                           |
+        +------------------+------------------+
+        |          |         |        |       |
+      Orders    Users    Locations  Social  Analytics
+        |          |         |        |       |
+        +----------+---------+--------+-------+
+                           |
+                    Row Level Security
+```
+
+## Delivery Workflow
+
+```text
+Create Order
+     |
+     v
+Order Available
+     |
+     v
+Student Accepts
+     |
+     v
+Delivery In Progress
+     |
+     v
+Order Delivered
+     |
+     v
+Rating and Reputation Update
+```
+
+The system also handles cancellation, stale orders, delivery restrictions, notifications, and authorization checks throughout the order lifecycle.
+
+## Database
+
+Campus-Link uses PostgreSQL through Supabase as its primary data layer.
+
+The database is managed through versioned migrations covering areas including:
+
+* Users and profiles
+* Orders
+* Locations
+* Delivery routes
+* Notifications
+* Ratings
+* Friendships
+* User preferences
+* Analytics
+* Reports
+* Rate limiting
+* Campus blocks
+* Authentication and email verification
+* Order chat
+
+Database access is controlled using Row Level Security policies and PostgreSQL functions, allowing authorization rules to be enforced at the database level rather than relying solely on frontend checks.
+
+## Security
+
+Security is implemented at both the application and database levels.
+
+Key mechanisms include:
+
+* VIT email-domain verification
+* Authentication and authorization
+* Row Level Security
+* Database-level access policies
+* Rate limiting
+* Protected order operations
+* Delivery acceptance restrictions
+* Reporting and trust mechanisms
+* Controlled access to notifications and social data
+
+Environment-specific configuration is handled through environment variables rather than committed credentials.
+
+## Getting Started
+
+### Prerequisites
+
+* Node.js
+* npm
+* A Supabase project
+
+### Installation
+
+Clone the repository:
+
+```bash
+git clone https://github.com/BUCKS10101/Campus-Link.git
+cd Campus-Link
+```
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Create the environment file:
+
+```bash
+cp .env.example .env
+```
+
+Add the required Supabase configuration to `.env`.
+
+Start the development server:
+
+```bash
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+## Testing
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+The project uses Vitest for testing.
 
-**Use GitHub Codespaces**
+```bash
+npm run test
+```
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## Project Structure
 
-## What technologies are used for this project?
+```text
+Campus-Link/
+├── public/
+├── scripts/
+├── src/
+├── supabase/
+│   └── migrations/
+├── .env.example
+├── .gitignore
+├── package.json
+├── vite.config.ts
+├── vitest.config.ts
+└── README.md
+```
 
-This project is built with:
+## Development
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+Campus-Link has evolved through multiple development phases covering:
 
-## How can I deploy this project?
+1. Core delivery functionality
+2. Campus location infrastructure
+3. Nearby discovery
+4. Notifications
+5. Ratings and reputation
+6. Social graph
+7. Personalization
+8. Analytics
+9. Trust and safety
+10. Authentication and verification
+11. Rate limiting and abuse prevention
 
-Simply open [Lovable](https://lovable.dev/projects/3fce128a-dcd9-41d2-bf9b-d368af63de69) and click on Share -> Publish.
+The repository contains the corresponding implementation and database migrations.
 
-## Can I connect a custom domain to my Lovable project?
+## Deployment
 
-Yes, you can!
+Campus-Link is deployed as a live web application and is accessible through a custom domain:
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+**https://campslink.shop/**
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+The application is deployed using Vercel, with the custom domain configured for the production deployment.
+
+## Project Status
+
+Campus-Link is actively under development.
+
+The current implementation focuses on building a complete campus delivery platform with location-aware delivery workflows, authentication, social features, security controls, and analytics.
+
+The latest production build is available at:
+
+**https://campslink.shop/**
+
+## Author
+
+**Govind Nair**
+
+B.Tech Computer Science and Engineering — Cyber Security
+VIT Vellore
+
+GitHub: https://github.com/BUCKS10101
