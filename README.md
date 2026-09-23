@@ -124,8 +124,8 @@ Schema changes are managed as timestamped SQL migrations in `supabase/migrations
 Prerequisites: Node.js 18+ and npm, and a Supabase project.
 
 ```bash
-git clone <repository-url>
-cd Campus-link
+git clone https://github.com/BUCKS10101/Campus-Link.git
+cd Campus-Link
 npm install
 cp .env.example .env
 ```
@@ -173,4 +173,9 @@ Design documents and per-feature specifications written during development are i
 
 ## Author
 
-<Your Name> — [narayann1232006@gmail.com](mailto:narayann1232006@gmail.com)
+**Govind Nair**
+
+B.Tech Computer Science and Engineering — Cyber Security  
+VIT Vellore
+
+[GitHub](https://github.com/BUCKS10101)
