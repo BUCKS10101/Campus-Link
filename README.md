@@ -4,7 +4,7 @@
 
 Campus-Link is a peer-to-peer delivery platform designed for university campuses. It allows students to request deliveries and enables other students to accept and complete those requests.
 
-The system is designed specifically around the constraints of a university environment, including campus locations, hostel blocks, student verification, delivery workflows, real-time communication, reputation, and access control.
+The system is designed around the constraints of a university environment, including campus locations, hostel blocks, student verification, delivery workflows, real-time communication, email verification, reputation, and access control.
 
 ## Live Demo
 
@@ -31,13 +31,24 @@ The system is designed specifically around the constraints of a university envir
 
 ### Authentication and Security
 
-* Student authentication and verification
+* VIT student email verification
 * VIT email-domain enforcement
+* Password recovery
+* Authentication and authorization
 * Row Level Security through Supabase
 * Database-level access control
 * Rate limiting for sensitive operations
 * Protected order and delivery operations
 * Trust and safety mechanisms
+
+### Email and Notifications
+
+* Transactional email delivery using Resend
+* Account verification emails
+* Password recovery emails
+* In-app notifications
+* Order-related notifications
+* Notification access control
 
 ### Ratings and Reputation
 
@@ -49,9 +60,9 @@ The system is designed specifically around the constraints of a university envir
 ### Communication
 
 * Order-specific chat
+* Real-time communication
 * Notifications for order events
 * Friend requests and social interactions
-* Notification access control
 
 ### Social Features
 
@@ -92,13 +103,16 @@ The system is designed specifically around the constraints of a university envir
 * Row Level Security
 * Supabase Realtime
 
-### Development and Deployment
+### Email and Infrastructure
+
+* Resend
+* Vercel
+* GitHub
+
+### Development
 
 * Vitest
 * ESLint
-* Vercel
-* GitHub
-* Custom domain deployment
 
 ## Architecture
 
@@ -124,6 +138,12 @@ The system is designed specifically around the constraints of a university envir
         +----------+---------+--------+-------+
                            |
                     Row Level Security
+                           |
+                  Server-side Services
+                           |
+                         Resend
+                           |
+             Verification & Recovery Emails
 ```
 
 ## Delivery Workflow
@@ -187,6 +207,7 @@ Key mechanisms include:
 * Delivery acceptance restrictions
 * Reporting and trust mechanisms
 * Controlled access to notifications and social data
+* Server-side handling of email service credentials
 
 Environment-specific configuration is handled through environment variables rather than committed credentials.
 
@@ -219,7 +240,7 @@ Create the environment file:
 cp .env.example .env
 ```
 
-Add the required Supabase configuration to `.env`.
+Add the required application and Supabase configuration to `.env`.
 
 Start the development server:
 
@@ -267,22 +288,25 @@ Campus-Link has evolved through multiple development phases covering:
 9. Trust and safety
 10. Authentication and verification
 11. Rate limiting and abuse prevention
+12. Transactional email infrastructure
 
 The repository contains the corresponding implementation and database migrations.
 
 ## Deployment
 
-Campus-Link is deployed as a live web application and is accessible through a custom domain:
+Campus-Link is deployed as a live web application using Vercel and is accessible through a custom domain:
 
 **https://campslink.shop/**
 
-The application is deployed using Vercel, with the custom domain configured for the production deployment.
+The production application uses Supabase for backend services and Resend for transactional email delivery, including account verification and password recovery.
+
+Users do not need a separate Resend account to use Campus-Link.
 
 ## Project Status
 
 Campus-Link is actively under development.
 
-The current implementation focuses on building a complete campus delivery platform with location-aware delivery workflows, authentication, social features, security controls, and analytics.
+The current implementation focuses on building a complete campus delivery platform with location-aware delivery workflows, authentication, social features, email communication, security controls, and analytics.
 
 The latest production build is available at:
 
@@ -296,3 +320,4 @@ B.Tech Computer Science and Engineering — Cyber Security
 VIT Vellore
 
 GitHub: https://github.com/BUCKS10101
+
