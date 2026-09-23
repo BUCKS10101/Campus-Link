@@ -15,9 +15,9 @@ describe('LoginSchema', () => {
     expect(LoginSchema.safeParse({ email: 'a@vitstudent.ac.in', password: 'x' }).success).toBe(true)
   })
 
-  it('rejects non-VIT emails', () => {
+  it('accepts non-VIT emails (domain restriction currently disabled)', () => {
     const result = LoginSchema.safeParse({ email: 'a@b.com', password: 'x' })
-    expect(result.success).toBe(false)
+    expect(result.success).toBe(true)
   })
 
   it('rejects an invalid email', () => {
@@ -38,8 +38,8 @@ describe('SignupSchema', () => {
     expect(SignupSchema.safeParse(valid).success).toBe(true)
   })
 
-  it('rejects non-VIT emails', () => {
-    expect(SignupSchema.safeParse({ ...valid, email: 'jane@gmail.com' }).success).toBe(false)
+  it('accepts non-VIT emails (domain restriction currently disabled)', () => {
+    expect(SignupSchema.safeParse({ ...valid, email: 'jane@gmail.com' }).success).toBe(true)
   })
 
   it('rejects a short password', () => {

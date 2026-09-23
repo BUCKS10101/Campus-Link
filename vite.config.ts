@@ -2,7 +2,6 @@ import { defineConfig, loadEnv, type Plugin } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import fs from "fs";
-import { componentTagger } from "lovable-tagger";
 
 // maplibre-gl-worker.mjs (loaded via a `?url` import so Vite emits it as a
 // standalone worker script) contains its own hardcoded relative import of
@@ -69,7 +68,7 @@ export default defineConfig(({ mode }) => {
       host: "::",
       port: 8080,
     },
-    plugins: [react(), copyMaplibreWorkerSharedChunk(), mode === "development" && componentTagger()].filter(Boolean),
+    plugins: [react(), copyMaplibreWorkerSharedChunk()],
     resolve: {
       alias: {
         "@": path.resolve(__dirname, "./src"),

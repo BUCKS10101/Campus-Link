@@ -30,3 +30,15 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Local tool state and caches
+.claude/
+supabase/.temp/
+supabase/.branches/
+.vercel
+coverage
+*.tsbuildinfo
+.eslintcache
+*.tmp
+*.bak
+Thumbs.db
