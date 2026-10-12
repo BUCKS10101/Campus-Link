@@ -119,6 +119,7 @@ const RequestRow = ({
   onAction,
   actionVariant = 'default',
   statusLabel,
+  onMessage,
 }: {
   friendship: FriendshipWithProfiles
   currentUserId: string
@@ -127,6 +128,8 @@ const RequestRow = ({
   actionVariant?: 'default' | 'ghost'
   /** e.g. "Pending" next to a Cancel action - the Sent section's own status text. */
   statusLabel?: string
+  /** Friends section only: opens (or creates) the direct conversation. */
+  onMessage?: () => Promise<void>
 }) => {
   const { toast } = useToast()
   const [busy, setBusy] = useState(false)
@@ -150,6 +153,11 @@ const RequestRow = ({
       <Text variant="bodySm" className="font-semibold">{otherName}</Text>
       <div className="flex items-center gap-2">
         {statusLabel && <Text variant="caption" tone="muted">{statusLabel}</Text>}
+        {onMessage && (
+          <Button size="sm" variant="outline" onClick={() => void onMessage()} aria-label={`Message - ${otherName}`}>
+            Message
+          </Button>
+        )}
         <Button size="sm" variant={actionVariant} loading={busy} onClick={handleClick} aria-label={`${actionLabel} - ${otherName}`}>
           {actionLabel}
         </Button>
@@ -164,8 +172,9 @@ const EmptySection = ({ label }: { label: string }) => (
 
 const Friends = () => {
   const { user, loading: authLoading } = useAuth()
-  const { fetchMyFriendships, acceptFriendRequest, declineFriendRequest, cancelFriendRequest, removeFriend } = useFriends()
+  const { fetchMyFriendships, acceptFriendRequest, declineFriendRequest, cancelFriendRequest, removeFriend, openConversationWith } = useFriends()
   const { toast } = useToast()
+  const navigate = useNavigate()
 
   const [friends, setFriends] = useState<FriendshipWithProfiles[]>([])
   const [received, setReceived] = useState<FriendshipWithProfiles[]>([])
@@ -223,6 +232,14 @@ const Friends = () => {
                 currentUserId={user.user.id}
                 actionLabel="Remove"
                 actionVariant="ghost"
+                onMessage={async () => {
+                  try {
+                    const otherId = f.requester_id === user.user.id ? f.addressee_id : f.requester_id
+                    navigate(`/messages/${await openConversationWith(otherId)}`)
+                  } catch (err) {
+                    toast({ title: "Couldn't open chat", description: getErrorMessage(err, 'Please try again.'), variant: 'destructive' })
+                  }
+                }}
                 onAction={async () => {
                   await removeFriend(f.id)
                   toast({ title: 'Friend removed' })

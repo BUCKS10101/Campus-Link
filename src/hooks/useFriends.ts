@@ -1,5 +1,6 @@
 import { useCallback, useState } from 'react'
 import { supabase } from '@/lib/supabase'
+import { untypedSupabase } from '@/lib/directMessages'
 import type { FriendshipWithProfiles, SearchProfileResult } from '@/lib/database-types'
 import { getErrorMessage } from '@/lib/utils'
 
@@ -105,6 +106,13 @@ export const useFriends = () => {
     if (error) throw new Error(getErrorMessage(error, 'Could not cancel request'))
   })
 
+  /** Finds or creates the single direct conversation with an accepted friend; returns its id. */
+  const openConversationWith = (friendId: string) => withLoading(async () => {
+    const { data, error } = await untypedSupabase.rpc('get_or_create_direct_conversation', { p_friend_id: friendId })
+    if (error) throw new Error(getErrorMessage(error, 'Could not open conversation'))
+    return data as unknown as string
+  })
+
   const removeFriend = (friendshipId: string) => withLoading(async () => {
     const { error } = await supabase.rpc('remove_friend', { p_friendship_id: friendshipId })
     if (error) throw new Error(getErrorMessage(error, 'Could not remove friend'))
@@ -120,5 +128,6 @@ export const useFriends = () => {
     declineFriendRequest,
     cancelFriendRequest,
     removeFriend,
+    openConversationWith,
   }
 }

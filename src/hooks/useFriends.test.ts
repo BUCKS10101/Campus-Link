@@ -187,3 +187,23 @@ describe('useFriends - write operations', () => {
     expect(result.current.loading).toBe(false)
   })
 })
+
+describe('useFriends - openConversationWith', () => {
+  it('asks the server for the single conversation with a friend and returns its id', async () => {
+    supabaseMock.rpc.mockResolvedValue({ data: 'conv-1', error: null })
+    const { result } = renderHook(() => useFriends())
+
+    const first = await result.current.openConversationWith('other-1')
+    const second = await result.current.openConversationWith('other-1')
+
+    expect(supabaseMock.rpc).toHaveBeenCalledWith('get_or_create_direct_conversation', { p_friend_id: 'other-1' })
+    expect(first).toBe('conv-1')
+    expect(second).toBe('conv-1')
+  })
+
+  it('surfaces the server rejection for someone who is not (or is no longer) a friend', async () => {
+    supabaseMock.rpc.mockResolvedValue({ data: null, error: { message: 'You can only message accepted friends' } })
+    const { result } = renderHook(() => useFriends())
+    await expect(result.current.openConversationWith('stranger')).rejects.toThrow(/accepted friends/)
+  })
+})

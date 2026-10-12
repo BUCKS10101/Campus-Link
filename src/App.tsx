@@ -13,6 +13,7 @@ import { LoadingRegion } from "@/components/primitives";
 import { AuthProvider } from "@/hooks/useAuth";
 import { NotificationsProvider } from "@/hooks/useNotifications";
 import { PreferencesProvider } from "@/hooks/usePreferences";
+import { ConversationsProvider } from "@/hooks/useConversations";
 
 // Login stays eager: it is the cold-start destination for every signed-out
 // visitor (ProtectedRoute redirects there), so lazy-loading it would cost
@@ -29,6 +30,7 @@ const DeliveringHistory = lazy(() => import("./pages/activity/DeliveringHistory"
 const Profile = lazy(() => import("./pages/Profile"));
 const Insights = lazy(() => import("./pages/Insights"));
 const Friends = lazy(() => import("./pages/Friends"));
+const Messages = lazy(() => import("./pages/Messages"));
 const Settings = lazy(() => import("./pages/Settings"));
 const VerifyEmail = lazy(() => import("./pages/VerifyEmail"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
@@ -38,7 +40,7 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <ErrorBoundary>
-    <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+    <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} disableTransitionOnChange>
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
           <Toaster />
@@ -58,6 +60,7 @@ const App = () => (
                 so a change made on one page is visible on the other
                 immediately, not only after a remount. */}
             <PreferencesProvider>
+            <ConversationsProvider>
               <Suspense fallback={<LoadingRegion label="Loading CampusLink" />}>
                 <Routes>
                   <Route path="/login" element={<Login />} />
@@ -86,6 +89,8 @@ const App = () => (
                     <Route path="/profile" element={<Profile />} />
                     <Route path="/insights" element={<Insights />} />
                     <Route path="/friends" element={<Friends />} />
+                    <Route path="/messages" element={<Messages />} />
+                    <Route path="/messages/:conversationId" element={<Messages />} />
                     <Route path="/settings" element={<Settings />} />
                     <Route path="/verify-email" element={<VerifyEmail />} />
                     <Route path="/reset-password" element={<ResetPassword />} />
@@ -95,6 +100,7 @@ const App = () => (
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </Suspense>
+            </ConversationsProvider>
             </PreferencesProvider>
             </NotificationsProvider>
             </AuthProvider>

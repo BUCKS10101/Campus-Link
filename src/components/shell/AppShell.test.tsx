@@ -27,6 +27,18 @@ vi.mock('@/hooks/useNotifications', () => ({
   }),
 }))
 
+// The header's Messages link reads the unread total from the conversations
+// context - not under test here either.
+vi.mock('@/hooks/useConversations', () => ({
+  useConversations: () => ({
+    conversations: [],
+    totalUnread: 0,
+    loading: false,
+    refresh: vi.fn(),
+    startConversation: vi.fn(),
+  }),
+}))
+
 const AUTH_USER = {
   user: { id: 'u1', email: 'jane@vitstudent.ac.in' },
   profile: { id: 'u1', name: 'Jane Doe', email: 'jane@vitstudent.ac.in', phone: '9876543210' },
