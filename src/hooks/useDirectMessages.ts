@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import type { RealtimeChannel } from '@supabase/supabase-js'
 import { ChatMessageSchema, validateOrThrow } from '@/lib/validation'
 import { getErrorMessage } from '@/lib/utils'
 import {
@@ -77,8 +78,11 @@ export const useDirectMessages = (
 
     void fetchLatest(conversationId, true)
 
-    let everSubscribed = false
-    const channel = db
+    let cancelled = false
+    let channel: RealtimeChannel | undefined
+
+    const connect = () => {
+      channel = db
       .channel(`direct_messages:${conversationId}`)
       .on(
         'postgres_changes',
@@ -102,18 +106,30 @@ export const useDirectMessages = (
         if (activeId.current !== conversationId) return
         if (subscribeStatus === 'SUBSCRIBED') {
           setStatus('live')
-          // Anything sent while the socket was down is only in the
-          // database; pull the newest page and merge it in.
-          if (everSubscribed) void fetchLatest(conversationId, false)
-          everSubscribed = true
+          // Realtime reports SUBSCRIBED slightly before events flow, and
+          // after a reconnect anything sent while the socket was down is
+          // only in the database. Re-sync the newest page on every join
+          // (first included) so there is no gap between the initial load
+          // and live delivery; merging by id makes it idempotent.
+          void fetchLatest(conversationId, false)
         } else if (subscribeStatus === 'CHANNEL_ERROR' || subscribeStatus === 'TIMED_OUT' || subscribeStatus === 'CLOSED') {
           setStatus('reconnecting')
         }
       })
+    }
+
+    // supabase-js can join a channel with the anon key if the signed-in
+    // user's token has not been applied to the socket yet, and Row Level
+    // Security then hides every event from this subscriber (verified
+    // against staging). Apply the user's token first, then join.
+    void db.realtime.setAuth().catch(() => undefined).then(() => {
+      if (!cancelled) connect()
+    })
 
     return () => {
+      cancelled = true
       activeId.current = undefined
-      void db.removeChannel(channel)
+      if (channel) void db.removeChannel(channel)
     }
   }, [conversationId, fetchLatest])
 

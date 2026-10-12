@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
@@ -12,10 +13,25 @@ const Messages = () => {
   const { user } = useAuth()
   const { conversations, loading, refresh } = useConversations()
   const navigate = useNavigate()
+  const active = conversations.find((c) => c.conversation_id === conversationId)
+
+  // The Friends page creates a conversation and navigates straight here,
+  // before this list has heard about it. If the id in the URL is not in the
+  // list, reload the list once for that id before deciding it is missing.
+  const [checkedId, setCheckedId] = useState<string | null>(null)
+  useEffect(() => {
+    if (!conversationId || active || loading || checkedId === conversationId) return
+    let cancelled = false
+    void refresh().finally(() => {
+      if (!cancelled) setCheckedId(conversationId)
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [conversationId, active, loading, checkedId, refresh])
 
   if (!user) return null
-
-  const active = conversations.find((c) => c.conversation_id === conversationId)
+  const resolving = Boolean(conversationId) && !active && checkedId !== conversationId
 
   return (
     <div className="max-w-measure">
@@ -84,7 +100,8 @@ const Messages = () => {
               />
             </>
           )}
-          {conversationId && !active && !loading && (
+          {resolving && <Skeleton className="h-40 w-full" />}
+          {conversationId && !active && !resolving && !loading && (
             <Text variant="body" tone="muted" as="p">This conversation isn't available.</Text>
           )}
           {!conversationId && (

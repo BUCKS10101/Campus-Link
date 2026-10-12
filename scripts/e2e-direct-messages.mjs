@@ -134,6 +134,9 @@ async function main() {
   check('marking your own sent messages read does nothing', !aliceMarksOwn.error)
 
   console.log('Realtime')
+  // Same as the app: apply the user's token to the realtime socket first,
+  // otherwise the channel joins as anon and RLS hides every event.
+  await bob.sb.realtime.setAuth()
   const got = new Promise((resolve) => {
     const timer = setTimeout(() => resolve(null), 8000)
     bob.sb
@@ -142,9 +145,12 @@ async function main() {
         clearTimeout(timer)
         resolve(p.new)
       })
-      .subscribe((status) => {
+      .subscribe(async (status) => {
         if (status === 'SUBSCRIBED') {
-          void alice.sb.from('direct_messages').insert({ conversation_id: convId, sender_id: alice.id, body: 'live!' })
+          // Realtime reports SUBSCRIBED a moment before events flow.
+          await new Promise((r) => setTimeout(r, 1500))
+          // Awaited on purpose: supabase-js query builders only send when awaited.
+          await alice.sb.from('direct_messages').insert({ conversation_id: convId, sender_id: alice.id, body: 'live!' })
         }
       })
   })

@@ -1,3 +1,4 @@
+import type { RealtimeChannel } from '@supabase/supabase-js'
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { useAuth } from '@/hooks/useAuth'
 import { getErrorMessage } from '@/lib/utils'
@@ -56,8 +57,11 @@ export function ConversationsProvider({ children }: { children: ReactNode }) {
       if (activeUser.current === userId) setLoading(false)
     })
 
-    let everSubscribed = false
-    const channel = db
+    let cancelled = false
+    let channel: RealtimeChannel | undefined
+
+    const connect = () => {
+      channel = db
       .channel(`direct_inbox:${userId}`)
       .on(
         'postgres_changes',
@@ -66,15 +70,24 @@ export function ConversationsProvider({ children }: { children: ReactNode }) {
       )
       .subscribe((status: string) => {
         if (status !== 'SUBSCRIBED') return
-        // Re-sync after a reconnect to pick up anything missed.
-        if (everSubscribed) scheduleRefresh()
-        everSubscribed = true
+        // Re-sync on every join (first included) to close the gap between
+        // the initial load and live delivery, and after any reconnect.
+        scheduleRefresh()
       })
+    }
+
+    // Apply the signed-in user's token to the realtime socket before
+    // joining - otherwise the channel can join as anon and RLS hides
+    // every event (see useDirectMessages.ts).
+    void db.realtime.setAuth().catch(() => undefined).then(() => {
+      if (!cancelled) connect()
+    })
 
     return () => {
+      cancelled = true
       activeUser.current = undefined
       if (timer.current) clearTimeout(timer.current)
-      void db.removeChannel(channel)
+      if (channel) void db.removeChannel(channel)
     }
   }, [userId, refresh, scheduleRefresh])
 
