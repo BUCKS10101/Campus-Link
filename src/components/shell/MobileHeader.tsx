@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 
 import { BrandMark } from "./BrandMark";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
+import { MessagesLink } from "./MessagesLink";
+import { ThemeToggle } from "./ThemeToggle";
 
 /**
  * Mobile has no persistent top bar today (DesktopNav is `md:hidden`,
@@ -21,7 +23,11 @@ export function MobileHeader() {
         <BrandMark size={20} />
         <span className="font-display text-[20px] leading-none text-foreground">CampusLink</span>
       </Link>
-      <NotificationBell />
+      <div className="flex items-center">
+        <ThemeToggle />
+        <MessagesLink />
+        <NotificationBell />
+      </div>
     </header>
   );
 }

@@ -1,5 +1,6 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
+import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from 'react'
 import { User } from '@supabase/supabase-js'
+import { useTheme } from 'next-themes'
 import { supabase } from '@/lib/supabase'
 import type { Profile } from '@/lib/database-types'
 import { SignupSchema, LoginSchema, ProfileUpdateSchema, ChangePasswordSchema, ForgotPasswordSchema, ResetPasswordSchema, validateOrThrow } from '@/lib/validation'
@@ -36,6 +37,15 @@ const AuthContext = createContext<AuthContextValue | null>(null)
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null)
   const [loading, setLoading] = useState(true)
+
+  // Light mode is the default for every new login session. A theme chosen
+  // during a session lives in next-themes (and survives reloads), and is
+  // reset here on sign-in and sign-out - including a different account
+  // signing in on the same browser. Held in a ref because the auth
+  // listener below is registered once and must not capture a stale setter.
+  const { setTheme } = useTheme()
+  const resetThemeRef = useRef(() => setTheme('light'))
+  resetThemeRef.current = () => setTheme('light')
 
   useEffect(() => {
     // Supabase can legitimately emit more than one state-change event for
@@ -126,6 +136,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setTimeout(() => {
         if (session?.user) {
+          // A genuinely new sign-in (not a token refresh or a tab-focus
+          // re-emit for the user already loaded) starts in light mode.
+          if (_event === 'SIGNED_IN' && fetchedForUserId !== session.user.id) {
+            resetThemeRef.current()
+          }
           if (fetchedForUserId === session.user.id) {
             // Same user as before - skip the profile re-fetch (the
             // guard this comment sits above exists for), but still
@@ -143,6 +158,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           void fetchUserProfile(session.user)
         } else {
           fetchedForUserId = null
+          resetThemeRef.current()
           setUser(null)
           setLoading(false)
         }
@@ -204,12 +220,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     })
 
     if (error) throw error
+    resetThemeRef.current()
     return data
   }
 
   const signOut = async () => {
     const { error } = await supabase.auth.signOut()
     if (error) throw error
+    resetThemeRef.current()
   }
 
   const updateProfile = async (updates: Partial<Profile>) => {

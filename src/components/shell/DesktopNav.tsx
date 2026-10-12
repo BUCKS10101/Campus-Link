@@ -8,6 +8,8 @@ import { AccountMenu } from "./AccountMenu";
 import { PageContainer } from "./PageContainer";
 import { BrandMark } from "./BrandMark";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
+import { MessagesLink } from "./MessagesLink";
+import { ThemeToggle } from "./ThemeToggle";
 import { cn } from "@/lib/utils";
 import {
   DropdownMenu,
@@ -128,6 +130,8 @@ export function DesktopNav() {
         </nav>
 
         <div className="ml-auto flex items-center gap-5">
+          <ThemeToggle />
+          <MessagesLink />
           <NotificationBell />
           <CreateAction href="/post-request" variant="desktop" />
           <AccountMenu />

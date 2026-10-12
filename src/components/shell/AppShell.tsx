@@ -5,6 +5,7 @@ import { DesktopNav } from "./DesktopNav";
 import { MobileHeader } from "./MobileHeader";
 import { MobileNav } from "./MobileNav";
 import { PageContainer } from "./PageContainer";
+import { ThemeNotice } from "./ThemeNotice";
 
 /**
  * The one application frame every authenticated page renders inside of.
@@ -22,6 +23,7 @@ import { PageContainer } from "./PageContainer";
 export function AppShell() {
   return (
     <div className="flex min-h-screen flex-col bg-background">
+      <ThemeNotice />
       <DesktopNav />
       <MobileHeader />
       <main className="flex-1">

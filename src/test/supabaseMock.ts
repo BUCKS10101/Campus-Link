@@ -60,5 +60,6 @@ export function createSupabaseMock() {
       subscribe: vi.fn().mockReturnThis(),
     })),
     removeChannel: vi.fn(),
+    realtime: { setAuth: vi.fn().mockResolvedValue(undefined) },
   }
 }
