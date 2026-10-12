@@ -108,7 +108,7 @@ describe('Login', () => {
     const fillRegister = async (email: string, phone: string, password: string) => {
       await userEvent.click(screen.getByRole('button', { name: /^register$/i }))
       await userEvent.type(screen.getByLabelText(/full name/i), 'Jane Doe')
-      await userEvent.type(screen.getByLabelText(/vit email/i), email)
+      await userEvent.type(screen.getByLabelText(/email/i), email)
       await userEvent.type(screen.getByLabelText(/phone number/i), phone)
       await userEvent.type(screen.getByLabelText(/password/i), password)
     }

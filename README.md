@@ -64,7 +64,7 @@ Live deployment: https://campslink.shop/
 
 - **Supabase Auth** handles sign-up, sign-in and sessions.
 - **Email verification**: new accounts must confirm their email before they can post, accept or message. Unverified users are routed to a verification page with a resend option.
-- **VIT email restriction**: `src/lib/validation.ts` defines a rule limiting accounts to `@vitstudent.ac.in` addresses. The rule is currently disabled so any valid email can sign up; re-enable it there to enforce VIT-only accounts.
+- **Open sign-up**: any valid email address can register. Both the client rule (`src/lib/validation.ts`, commented out) and the database trigger (`20261013200000_allow_any_email_signup.sql`, which now only requires a valid-looking email) no longer restrict the domain. To bring the VIT-only rule back, uncomment the client rule and restore the domain check in `enforce_vit_email_domain()` (see `20260903170000_enforce_vit_email_domain.sql`). Email verification (Confirm email) is still required before posting, accepting, messaging or sending friend requests.
 - **Password recovery**: a forgot-password flow sends a reset link, and `/reset-password` lets the user set a new password.
 - **Transactional email**: verification and password-reset emails are sent through Resend, configured as the custom SMTP provider in Supabase Auth.
 - **Row Level Security** is enabled on application tables. Policies restrict each user to the rows they are allowed to see or modify, and column-level grants limit which fields are writable.

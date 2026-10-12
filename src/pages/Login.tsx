@@ -197,7 +197,7 @@ const Login = () => {
               {step === 'login'
                 ? 'Sign in with your credentials.'
                 : step === 'register'
-                ? 'Register with your VIT student details.'
+                ? 'Register with your email and phone number.'
                 : resetEmailSent
                 ? `If an account exists for ${formData.email}, a reset link is on its way.`
                 : "Enter your email and we'll send you a link to reset it."}
@@ -235,7 +235,7 @@ const Login = () => {
 
               <div className="flex flex-col gap-2">
                 <Text as="label" variant="label" tone="faint" htmlFor="email">
-                  {step === 'register' ? 'VIT email' : 'Email'}
+                  Email
                 </Text>
                 <Input
                   id="email"
